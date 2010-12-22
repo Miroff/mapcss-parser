@@ -1,0 +1,49 @@
+This is MapCSS parser I use in my OSM rendering. I've tried to implement spec 
+from http://wiki.openstreetmap.org/wiki/MapCSS but it's not very formal, so 
+the implementation may doesn't match with your vision of MapCSS. 
+This parser use PLY (http://www.dabeaz.com/ply) library. 
+
+== Layout
+ast.py             - Abstract Syntax Tree classes
+lex.py             - Lexer
+mapcss_parser.py   - MapCSS parser entry point
+parse.py           - Parser
+parser_test.py     - Unit tests of MapCSS parser
+
+== Usage
+Simple way to see MapCSS parser in action is use CLI:
+
+> python mapcss_parser.py <YOUR_MAP_CSS_FILE>
+
+This script will parse your file to AST, and build it again from AST to MapCSS. Not very useful, ah?
+
+More complex example. I use this parser to convert MapCSS to the code. So I've just mixed-in 
+necessary methods directly to AST classes. 
+
+import sys
+sys.path.insert(0,"../mapcss-parser")
+
+from mapcss_parser import MapCSSParser
+
+import ast
+
+if len(sys.argv) != 2:
+    print "usage : mapcss.py inputfile"
+    raise SystemExit
+
+content = open(sys.argv[1]).read()
+parser = MapCSSParser(debug=False)
+mapcss = parser.parse(content)
+
+def mapcss_convert(self):
+    imports = "".join(map(lambda imp: propagate_import(imp.url).as_js, self.imports))
+    rules = "\n".join(map(lambda x: x.as_js(), self.rules))
+    return "%s%s" % (imports, rules)
+    
+ast.MapCSS.convert = mapcss_convert
+
+... And so on for other 13 AST classes
+
+print mapcss.convert()
+
+If you have questions about MapCSS parser, you can find my on #osm and #osm_ru IRC channels, of e-mail me to <mr.miroff@gmail.com>

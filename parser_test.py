@@ -268,11 +268,20 @@ way {
 	width: eval(1 + 2 * 3 - 4 / 5);
 }		
 		""")
-		
-#	def test_kothik_style(self):
-#		self.check("""
-#""")
-		
+
+	def test_subpart(self):
+		self.check("""
+way::centerline {
+	color: red;
+}		
+		""")
+
+	def test_subpart_cond(self):
+		self.check("""
+way[highway]::centrline {
+	color: red;
+}		
+		""")
 
 	def check(self, css, expected=None):
 		parsed_mapcss = str(self.parser.parse(css))

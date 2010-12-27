@@ -20,6 +20,7 @@ tokens = (
     
     #Rule sublect
     'SUBJECT',
+    'SUBPART',
     'CLASS',
     'ZOOM',
     
@@ -61,7 +62,7 @@ tokens = (
 t_ANY_ignore  = ' \t'
 
 t_SUBJECT = r'\w+'
-t_condition_SIGN = r'=~|=|<|>|<>|<=|>=|!='
+t_condition_SIGN = r'=~|<>|<=|>=|!=|<|>|='
 t_condition_NOT = r'\!'
 t_condition_IDENTIFIER = r'[:\w]+'
 t_condition_REGEX = r'/\w+?/'
@@ -77,6 +78,11 @@ t_eval_NUMBER = r'\d+(\.\d+)?'
 t_eval_OPERATION = r'\+|-|\*|\/|==|<>|!=|<=|>=|>|<|eq|ne|\.'
 t_eval_FUNCTION = r'\w+'
 t_eval_COMMA = r','
+
+def t_SUBPART(t):
+	r'::\w+'
+	t.value = t.value[2:]
+	return t
 
 def t_eval_LPAREN(t):
     r'\('

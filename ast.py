@@ -78,7 +78,12 @@ class Selector:
         else:
             parent = ''
         
-        return "%s%s%s%s" % (parent, self.subject, self.zoom, criteria)
+        if self.subpart and self.subpart != 'default':
+            subpart = "::%s" % self.subpart 
+        else:
+            subpart = ""
+            
+        return "%s%s%s%s%s" % (parent, self.subject, self.zoom, criteria, subpart)
 
 class Action:
     def __init__(self, statements):

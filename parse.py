@@ -52,6 +52,14 @@ def p_selector_zoom_empty(p):
     'selector : SUBJECT ZOOM'
     p[0] = [ast.Selector(subject=p[1], zoom=p[2])]
 
+def p_selector_empty_subpart(p):
+    'selector : SUBJECT SUBPART'
+    p[0] = [ast.Selector(subject=p[1], subpart=p[2])]
+
+def p_selector_zoom_empty_subpart(p):
+    'selector : SUBJECT ZOOM SUBPART'
+    p[0] = [ast.Selector(subject=p[1], zoom=p[2], subpart=p[3])]
+
 def p_selector_and(p):
     'selector : selector criteria'
     p[0] = p[1]
@@ -70,6 +78,13 @@ def p_selecotr_or(p):
 def p_selecotr_last(p):
     'selector : selector COMMA'
     p[0] = p[1]
+
+def p_selector_subpart(p):
+    'selector : selector SUBPART'
+    p[0] = p[1]
+    for selector in p[0]:
+        selector.subpart = p[2]
+
 
 def p_criteria_check(p):
     'criteria : LSQBRACE condition RSQBRACE'

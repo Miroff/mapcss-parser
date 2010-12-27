@@ -54,11 +54,12 @@ class Rule:
         return "%s%s" % (selectors, actions)
         
 class Selector:
-    def __init__(self, subject, zoom=''):
+    def __init__(self, subject, zoom='', subpart='default'):
         self.subject = subject
         self.zoom = zoom
         self.criteria = []
         self.parent = None
+        self.subpart = subpart
         
     def append_criteria(self, criteria):
         self.criteria.append(criteria)

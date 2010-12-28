@@ -68,7 +68,6 @@ t_condition_IDENTIFIER = r'[:\w]+'
 t_condition_REGEX = r'/\w+?/'
 t_COMMA = r','
 t_actionkey_KEY = r'[\w-]+'
-t_tagvalue_VALUE = r'([#\w\-\.,:]+)'
 t_actionkey_CLASS = r'\.\w+'
 t_CLASS = r'\.\w+'
 t_PSEUDOCLASS = r':\w+'
@@ -80,9 +79,9 @@ t_eval_FUNCTION = r'\w+'
 t_eval_COMMA = r','
 
 def t_SUBPART(t):
-	r'::\w+'
-	t.value = t.value[2:]
-	return t
+    r'::\w+'
+    t.value = t.value[2:]
+    return t
 
 def t_eval_LPAREN(t):
     r'\('
@@ -114,7 +113,12 @@ def t_actionvalue_EVAL(t):
     return t
 
 def t_actionvalue_VALUE(t):
-    r'([\s"\'\\\/#\w\-\.,:]+)'
+    r'((?P<quote>["\'])[^"\\]*(:?\\.[^"\\]*)*(?P=quote))|([#\w\-\.,\\\/]+)'
+    t.value = t.value.strip(r'"\'')
+    return t
+
+def t_tagvalue_VALUE(t):
+    r'((?P<quote>["\'])[^"\\]*(:?\\.[^"\\]*)*(?P=quote))|([#\w\-\.,\\\/]+)'
     t.value = t.value.strip(r'"\'')
     return t
 
@@ -147,6 +151,11 @@ def t_actionkey_COLON(t):
     t.lexer.begin('actionvalue')
     return t
 
+def t_actionkey_SEMICOLON(t):
+    r';'
+    t.lexer.begin('actionkey')  
+    pass
+
 def t_actionkey_EQUALS(t):
     r'='
     t.lexer.begin('tagvalue')
@@ -157,34 +166,29 @@ def t_actionkey_EXIT(t):
     t.lexer.begin('actionvalue')
     return t
 
-def t_actionvalue_SEMICOLON(t):
-    r';'
-    t.lexer.begin('actionkey')
-    pass
-
-def t_tagvalue_SEMICOLON(t):
-    r';'
-    t.lexer.begin('actionkey')  
-    return t
-
-def t_actionkey_SEMICOLON(t):
-    r';'
-    t.lexer.begin('actionkey')  
-    return t    
-
-def t_LCBRACE(t):
-    r'{'
-    t.lexer.begin('actionkey')
-    return t
-
 def t_actionkey_RCBRACE(t):
     r'}'
     t.lexer.begin('INITIAL')
     return t
 
+def t_actionvalue_SEMICOLON(t):
+    r';'
+    t.lexer.begin('actionkey')
+    pass
+
 def t_actionvalue_RCBRACE(t):
     r'}'
     t.lexer.begin('INITIAL')
+    return t
+
+def t_tagvalue_SEMICOLON(t):
+    r';'
+    t.lexer.begin('actionkey')  
+    pass
+
+def t_LCBRACE(t):
+    r'{'
+    t.lexer.begin('actionkey')
     return t
 
 def t_LSQBRACE(t):
@@ -205,7 +209,7 @@ def t_ANY_error(t):
 # Define a rule so we can track line numbers
 def t_ANY_newline(t):
     r'\n+'
-    t.lexer.lineno += len(t.value)
+    t.lexer.lineno = t.lineno
     
 lexer = lex.lex(reflags=re.DOTALL)
 

@@ -10,7 +10,7 @@ tokens = lex.tokens
 # Error rule for syntax errors
 def p_error(p):
     if p:
-        print "Syntax error in input at line %s" % (p.lineno / 2)
+        print "Syntax error in input at line %s" % (p.lineno)
 
 def p_mapcss(p):
     'css : rule'
@@ -144,15 +144,15 @@ def p_properties(p):
     p[0] = [ast.StyleStatement(p[1], p[3])]
 
 def p_set_tag_value(p):
-    'statements : KEY KEY EQUALS value SEMICOLON'
+    'statements : KEY KEY EQUALS value'
     p[0] = [ast.TagStatement(p[2], p[4])]
 
 def p_set_tag(p):
-    'statements : KEY KEY SEMICOLON'
+    'statements : KEY KEY'
     p[0] = [ast.TagStatement(p[2])]
 
 def p_set_class(p):
-    'statements : KEY CLASS SEMICOLON'
+    'statements : KEY CLASS'
     p[0] = [ast.ClassStatement(p[2])]
 
 def p_properties_multiple(p):

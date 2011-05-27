@@ -4,3 +4,5 @@
 *.log
 *.css
 parsetab.py
+MANIFEST
+build

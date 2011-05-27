@@ -3,12 +3,18 @@ from http://wiki.openstreetmap.org/wiki/MapCSS but it's not very formal, so
 the implementation may doesn't match with your vision of MapCSS. 
 This parser use PLY (http://www.dabeaz.com/ply) library. 
 
+== Dependency
+sudo pip install ply
+
+== Installation
+sudo python setup.py install
+
 == Layout
-ast.py             - Abstract Syntax Tree classes
-lex.py             - Lexer
-mapcss_parser.py   - MapCSS parser entry point
-parse.py           - Parser
-parser_test.py     - Unit tests of MapCSS parser
+mapcss_parser/ast.py             - Abstract Syntax Tree classes
+mapcss_parser/lex.py             - Lexer
+mapcss_parser.py   				 - MapCSS parser entry point
+mapcss_parser/parse.py           - Parser
+test/parser_test.py     - Unit tests of MapCSS parser
 
 == Usage
 Simple way to see MapCSS parser in action is use CLI:

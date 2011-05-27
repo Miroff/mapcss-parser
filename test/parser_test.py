@@ -306,6 +306,19 @@ way[highway]::centrline {
     color: red;
 }		
         """)
+        
+    def test_unquoted_font_family(self):
+        self.check("""
+way {
+    font-family: DejaVu Serif Italic; 
+}		
+        """)
+
+    def test_addr_tag_in_conditions(self):
+        self.check("""
+way[addr:street] {
+}		
+        """)
 
     def check(self, css, expected=None):
         parsed_mapcss = str(self.parser.parse(css))

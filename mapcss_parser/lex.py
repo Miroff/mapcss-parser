@@ -113,7 +113,7 @@ def t_actionvalue_EVAL(t):
     return t
 
 def t_actionvalue_VALUE(t):
-    r'((?P<quote>["\'])[^"\\]*(:?\\.[^"\\]*)*(?P=quote))|([#\w\-\.,\\\/]+)'
+    r'((?P<quote>["\'])[^"\\]*(:?\\.[^"\\]*)*(?P=quote))|([#\w\-\.,\\\/ ]+)'
     t.value = t.value.strip(r'"\'')
     return t
 

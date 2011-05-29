@@ -1,6 +1,6 @@
 from distutils.core import setup
 setup(name='mapcss_parser',
-      version='0.1',
+      version='0.2',
       author="Miroff",
       author_email="mr.miroff@gmail.com",
       url='https://github.com/Miroff/mapcss-parser',

@@ -320,6 +320,14 @@ way[addr:street] {
 }		
         """)
 
+    def test_addr_tag_in_statement(self):
+        self.check("""
+area[building] {
+    text: addr:housenumber;
+    text-color: red;
+}		
+        """)
+
     def check(self, css, expected=None):
         parsed_mapcss = str(self.parser.parse(css))
         mapcss = css

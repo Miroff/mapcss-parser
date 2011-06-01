@@ -208,7 +208,7 @@ def t_ANY_error(t):
 
 # Define a rule so we can track line numbers
 def t_ANY_newline(t):
-    r'\n+'
+    r'\r?\n+'
     t.lexer.lineno = t.lineno
     
 lexer = lex.lex(reflags=re.DOTALL)

@@ -23,6 +23,7 @@ tokens = (
     'SUBPART',
     'CLASS',
     'ZOOM',
+    'MEMBEROF',
     
     #Conditions
     'LSQBRACE',
@@ -61,7 +62,7 @@ tokens = (
 # Completely ignored characters
 t_ANY_ignore  = ' \t'
 
-t_SUBJECT = r'\w+'
+t_SUBJECT = r'\w+|\*'
 t_condition_SIGN = r'=~|<>|<=|>=|!=|<|>|='
 t_condition_NOT = r'\!'
 t_condition_IDENTIFIER = r'[^!<>=\[\]]+'
@@ -78,8 +79,12 @@ t_eval_OPERATION = r'\+|-|\*|\/|==|<>|!=|<=|>=|>|<|eq|ne|\.'
 t_eval_FUNCTION = r'\w+'
 t_eval_COMMA = r','
 
+def t_MEMBEROF(t):
+    r'>'
+    return t
+
 def t_SUBPART(t):
-    r'::\w+'
+    r'::(:?[\w\d-]+|\*)'
     t.value = t.value[2:]
     return t
 
@@ -203,13 +208,13 @@ def t_condition_RSQBRACE(t):
 
 # Error handling rule
 def t_ANY_error(t):
-    print "Illegal character '%s'" % t.value[0]
+    print "Illegal character '%s' at line %s" % (t.value[0], t.lexer.lineno)
     t.lexer.skip(1)
 
 # Define a rule so we can track line numbers
 def t_ANY_newline(t):
-    r'\r?\n+'
-    t.lexer.lineno = t.lineno
+    r'\r?\n'
+    t.lexer.lineno += 1
     
 lexer = lex.lex(reflags=re.DOTALL)
 

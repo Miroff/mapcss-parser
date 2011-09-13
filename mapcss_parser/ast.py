@@ -60,9 +60,13 @@ class Selector:
         self.criteria = []
         self.parent = None
         self.subpart = subpart
+        self.within_selector = None
         
     def append_criteria(self, criteria):
         self.criteria.append(criteria)
+        
+    def set_child(self, selector):
+        self.within_selector = selector
         
     def set_parent(self, selector):
         root = self
@@ -83,7 +87,12 @@ class Selector:
         else:
             subpart = ""
             
-        return "%s%s%s%s%s" % (parent, self.subject, self.zoom, criteria, subpart)
+        if self.within_selector:
+            within = ' > %s' % str(self.within_selector)
+        else:
+            within = ''
+            
+        return "%s%s%s%s%s%s" % (parent, self.subject, self.zoom, criteria, subpart, within)
 
 class Action:
     def __init__(self, statements):

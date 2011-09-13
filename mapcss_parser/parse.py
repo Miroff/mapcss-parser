@@ -65,16 +65,21 @@ def p_selector_and(p):
     p[0] = p[1]
     p[0][-1].append_criteria(p[2])
 
+def p_selector_memberof(p):
+    'selector : selector MEMBEROF selector'
+    p[0] = p[1]
+    p[0][-1].set_child(p[3][-1])
+
 def p_selector_within(p):
     'selector : selector selector'
     p[0] = [p[2][-1]]
     p[2][-1].set_parent(p[1][-1])
 
-def p_selecotr_or(p):
+def p_selector_or(p):
     'selector : selector COMMA selector'
     p[0] = p[1]
     p[0] += p[3]
-
+    
 def p_selecotr_last(p):
     'selector : selector COMMA'
     p[0] = p[1]

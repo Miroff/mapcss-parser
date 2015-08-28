@@ -1,5 +1,5 @@
-import lex
-import parse
+from mapcss_parser import lex
+from mapcss_parser import parse
 
 from ply import *
 

@@ -17,14 +17,14 @@ states = (
 tokens = (
     #Comments in C-style
     'COMMENT',
-    
+
     #Rule sublect
     'SUBJECT',
     'SUBPART',
     'CLASS',
     'ZOOM',
     'MEMBEROF',
-    
+
     #Conditions
     'LSQBRACE',
     'RSQBRACE',
@@ -34,7 +34,7 @@ tokens = (
 
     #Actions
     'LCBRACE',
-    'RCBRACE',  
+    'RCBRACE',
     'KEY',
     'VALUE',
     'COLON',
@@ -43,12 +43,12 @@ tokens = (
     'REGEX',
     'EXIT',
     'EQUALS',
-    
+
     #Import
     'IMPORT',
     'URL',
-    'PSEUDOCLASS',    
-    
+    'PSEUDOCLASS',
+
     #eval
     'EVAL',
     'LPAREN',
@@ -99,7 +99,7 @@ def t_eval_RPAREN(t):
     if t.lexer.level == 0:
         t.lexer.begin('actionvalue')
     return t
-    
+
 def t_eval_STRING(t):
     r'"[^"\\]*(:?\\.[^"\\]*)*"'
     t.value = t.value[1:-1]
@@ -110,7 +110,7 @@ def t_tagvalue_EVAL(t):
     t.lexer.begin('eval')
     t.lexer.level = 0
     return t
-    
+
 def t_actionvalue_EVAL(t):
     r'eval'
     t.lexer.begin('eval')
@@ -145,7 +145,7 @@ def t_import_URL(t):
 def t_ANY_COMMENT(t):
     r'/\*.*?\*/'
     pass
-    
+
 def t_ZOOM(t):
     r'\|(z|s)\d*(\-\d*)?'
     t.lexer.begin('INITIAL')
@@ -158,7 +158,7 @@ def t_actionkey_COLON(t):
 
 def t_actionkey_SEMICOLON(t):
     r';'
-    t.lexer.begin('actionkey')  
+    t.lexer.begin('actionkey')
     pass
 
 def t_actionkey_EQUALS(t):
@@ -188,7 +188,7 @@ def t_actionvalue_RCBRACE(t):
 
 def t_tagvalue_SEMICOLON(t):
     r';'
-    t.lexer.begin('actionkey')  
+    t.lexer.begin('actionkey')
     pass
 
 def t_LCBRACE(t):
@@ -215,7 +215,7 @@ def t_ANY_error(t):
 def t_ANY_newline(t):
     r'\r?\n'
     t.lexer.lineno += 1
-    
+
 lexer = lex.lex(reflags=re.DOTALL)
 
 if __name__ == '__main__':

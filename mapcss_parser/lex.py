@@ -31,6 +31,7 @@ tokens = (
     'SIGN',
     'NOT',
     'IDENTIFIER',
+    'REGEX',
 
     #Actions
     'LCBRACE',
@@ -40,7 +41,6 @@ tokens = (
     'COLON',
     'SEMICOLON',
     'COMMA',
-    'REGEX',
     'EXIT',
     'EQUALS',
 

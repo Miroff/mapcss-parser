@@ -12,14 +12,14 @@ sudo python setup.py install
 == Layout
 mapcss_parser/ast.py             - Abstract Syntax Tree classes
 mapcss_parser/lex.py             - Lexer
-mapcss_parser.py   				 - MapCSS parser entry point
+mapcss_parser.py                 - MapCSS parser entry point
 mapcss_parser/parse.py           - Parser
 test/parser_test.py     - Unit tests of MapCSS parser
 
 == Usage
 Simple way to see MapCSS parser in action is use CLI:
 
-> python mapcss_parser.py <YOUR_MAP_CSS_FILE>
+> python mapcss-parser.py <YOUR_MAP_CSS_FILE>
 
 This script will parse your file to AST, and build it again from AST to MapCSS. Not very useful, ah?
 
@@ -45,11 +45,11 @@ def mapcss_convert(self):
     imports = "".join(map(lambda imp: propagate_import(imp.url).as_js, self.imports))
     rules = "\n".join(map(lambda x: x.as_js(), self.rules))
     return "%s%s" % (imports, rules)
-    
+
 ast.MapCSS.convert = mapcss_convert
 
 ... And so on for other 13 AST classes
 
 print mapcss.convert()
 
-If you have questions about MapCSS parser, you can find my on #osm and #osm_ru IRC channels, of e-mail me to <mr.miroff@gmail.com>
+If you have questions about MapCSS parser, you can find me on #osm and #osm_ru IRC channels, of e-mail me to <mr.miroff@gmail.com>

@@ -1,5 +1,5 @@
-import lex
-import parse
+from mapcss_parser import lex
+from mapcss_parser import parse
 
 from ply import *
 
@@ -14,10 +14,8 @@ class MapCSSParser:
 
             while True:
                 tok = lexer.token()
-                if not tok: 
+                if not tok:
                     break      # No more input
-                print tok            
-        
-        return yacc.parse(content)
-        
+                print(tok)
 
+        return yacc.parse(content)

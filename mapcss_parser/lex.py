@@ -5,6 +5,16 @@
 import re
 import ply.lex as lex
 
+# Compute column.
+#     input is the input text string
+#     token is a token instance
+# Basically taken from the PLY documentation
+def find_column(input,token):
+    last_cr = input.rfind('\n',0,token.lexpos)
+    if last_cr < 0:
+        last_cr = 0
+    return (token.lexpos - last_cr)
+
 states = (
     ('condition', 'exclusive'),
     ('actionkey', 'exclusive'),
@@ -17,38 +27,40 @@ states = (
 tokens = (
     #Comments in C-style
     'COMMENT',
-    
+    #Comments in C++-style
+    'CXXCOMMENT',
+
     #Rule sublect
     'SUBJECT',
     'SUBPART',
     'CLASS',
     'ZOOM',
     'MEMBEROF',
-    
+
     #Conditions
     'LSQBRACE',
     'RSQBRACE',
     'SIGN',
     'NOT',
     'IDENTIFIER',
+    'REGEX',
 
     #Actions
     'LCBRACE',
-    'RCBRACE',  
+    'RCBRACE',
     'KEY',
     'VALUE',
     'COLON',
     'SEMICOLON',
     'COMMA',
-    'REGEX',
     'EXIT',
     'EQUALS',
-    
+
     #Import
     'IMPORT',
     'URL',
-    'PSEUDOCLASS',    
-    
+    'PSEUDOCLASS',
+
     #eval
     'EVAL',
     'LPAREN',
@@ -63,9 +75,9 @@ tokens = (
 t_ANY_ignore  = ' \t'
 
 t_SUBJECT = r'\w+|\*'
-t_condition_SIGN = r'=~|<>|<=|>=|!=|<|>|='
+t_condition_SIGN = r'=~|<>|<=|>=|!=|<|>|=|~='
 t_condition_NOT = r'\!'
-t_condition_IDENTIFIER = r'[^!<>=\[\]]+'
+t_condition_IDENTIFIER = r'[^!<>=\[\]~]+'
 t_condition_REGEX = r'/\w+?/'
 t_COMMA = r','
 t_actionkey_KEY = r'[\w-]+'
@@ -78,6 +90,10 @@ t_eval_NUMBER = r'\d+(\.\d+)?'
 t_eval_OPERATION = r'\+|-|\*|\/|==|<>|!=|<=|>=|>|<|eq|ne|\.'
 t_eval_FUNCTION = r'\w+'
 t_eval_COMMA = r','
+
+def t_ANY_CXXCOMMENT(t):
+    r'//[^\n]*'
+    pass
 
 def t_MEMBEROF(t):
     r'>'
@@ -97,9 +113,9 @@ def t_eval_RPAREN(t):
     r'\)'
     t.lexer.level -= 1
     if t.lexer.level == 0:
-        t.lexer.begin('actionvalue')
+        t.lexer.pop_state()
     return t
-    
+
 def t_eval_STRING(t):
     r'"[^"\\]*(:?\\.[^"\\]*)*"'
     t.value = t.value[1:-1]
@@ -107,13 +123,13 @@ def t_eval_STRING(t):
 
 def t_tagvalue_EVAL(t):
     r'eval'
-    t.lexer.begin('eval')
+    t.lexer.push_state('eval')
     t.lexer.level = 0
     return t
-    
+
 def t_actionvalue_EVAL(t):
     r'eval'
-    t.lexer.begin('eval')
+    t.lexer.push_state('eval')
     t.lexer.level = 0
     return t
 
@@ -129,12 +145,12 @@ def t_tagvalue_VALUE(t):
 
 def t_import_SEMICOLON(t):
     r';'
-    t.lexer.begin('INITIAL')
+    t.lexer.pop_state()
     return t
 
 def t_IMPORT(t):
     r'@import'
-    t.lexer.begin('import')
+    t.lexer.push_state('import')
     return t
 
 def t_import_URL(t):
@@ -144,78 +160,82 @@ def t_import_URL(t):
 
 def t_ANY_COMMENT(t):
     r'/\*.*?\*/'
+    t.lexer.lineno += t.value.count('\n')
     pass
-    
+
 def t_ZOOM(t):
     r'\|(z|s)\d*(\-\d*)?'
-    t.lexer.begin('INITIAL')
     return t
 
 def t_actionkey_COLON(t):
     r':'
-    t.lexer.begin('actionvalue')
+    t.lexer.pop_state()
+    t.lexer.push_state('actionvalue')
     return t
 
 def t_actionkey_SEMICOLON(t):
     r';'
-    t.lexer.begin('actionkey')  
+    t.lexer.pop_state()
+    t.lexer.push_state('actionkey')
     pass
 
 def t_actionkey_EQUALS(t):
     r'='
-    t.lexer.begin('tagvalue')
+    t.lexer.push_state('tagvalue')
     return t
 
 def t_actionkey_EXIT(t):
     r'exit';
-    t.lexer.begin('actionvalue')
+    t.lexer.pop_state()
+    t.lexer.push_state('actionvalue')
     return t
 
 def t_actionkey_RCBRACE(t):
     r'}'
-    t.lexer.begin('INITIAL')
+    t.lexer.pop_state()
     return t
 
 def t_actionvalue_SEMICOLON(t):
     r';'
-    t.lexer.begin('actionkey')
+    t.lexer.pop_state()
+    t.lexer.push_state('actionkey')
     pass
 
 def t_actionvalue_RCBRACE(t):
     r'}'
-    t.lexer.begin('INITIAL')
+    t.lexer.pop_state()
     return t
 
 def t_tagvalue_SEMICOLON(t):
     r';'
-    t.lexer.begin('actionkey')  
+    t.lexer.begin('actionkey')
     pass
 
 def t_LCBRACE(t):
     r'{'
-    t.lexer.begin('actionkey')
+    t.lexer.push_state('actionkey')
     return t
 
 def t_LSQBRACE(t):
     r'\['
-    t.lexer.begin('condition')
+    t.lexer.push_state('condition')
     return t
 
 def t_condition_RSQBRACE(t):
     r'\]'
-    t.lexer.begin('INITIAL')
+    t.lexer.pop_state()
     return t
 
 # Error handling rule
 def t_ANY_error(t):
-    print "Illegal character '%s' at line %s" % (t.value[0], t.lexer.lineno)
+    print("Illegal character '%s' at line %i position %i" % (t.value[0], t.lexer.lineno, find_column(t.lexer.lexdata, t)))
     t.lexer.skip(1)
 
 # Define a rule so we can track line numbers
 def t_ANY_newline(t):
     r'\r?\n'
     t.lexer.lineno += 1
-    
+
 lexer = lex.lex(reflags=re.DOTALL)
 
 if __name__ == '__main__':

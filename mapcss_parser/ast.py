@@ -4,6 +4,8 @@
 MapCSS data model. This is "as is" object representation of MapCSS file
 """
 
+from mapcss_parser import error
+
 def is_number(s):
     try:
         float(s)
@@ -150,6 +152,8 @@ class ConditionCheck:
         self.key = key
         self.sign = sign
         self.value = value
+        if ((sign == '!~' or sign == '=~') and (value[0:1] != '/' or value[-1:] != '/')):
+            raise error.MapCSSError("regular expression operator %s used with operand '%s' that is no regular expression" % (sign, value))
 
     def __str__(self):
         return "[%s%s%s]" % (self.key, self.sign, self.value)
